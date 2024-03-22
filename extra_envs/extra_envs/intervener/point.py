@@ -18,6 +18,9 @@ class PointIntervener(Intervener):
     """
     Intervener for the point system. Intervenes by selecting a safe action based on an
     internal model of the point system and environment.
+    UNCERTAINTY MODIFICATION:
+    - PASS IN UNCERTAINTY METRICS FROM CPPO file. 
+    - If uncertainty metrics passed in, we filer the rollouts
     """
     def __init__(self, sim_env, mode=Intervener.MODE.SAFE_ACTION,
                  cost_smoothing=0., gamma=0.99, intv_lim=0.01, only_q=False,
@@ -53,7 +56,12 @@ class PointIntervenerRollout(PointIntervener):
     """
     Intervention rule uses a model-based rollout.
     """
-    def should_intervene(self, action):
+    def should_intervene(self, action, uncert_value=None, uncert_threshold=None):
+        # if passing in uncertainty metrics, then use uncertainty-based filtering to decide 
+        # whether to run an intervention pipeline
+        if uncert_value != None and uncert_threshold != None:
+            if uncert_value < uncert_threshold:
+                return False
         distances = self.safe_pi_distances(action)
         costs = self.cost_fn(distances)
         qc = discounted_return(costs, self.gamma)
@@ -107,7 +115,12 @@ class PointIntervenerNetwork(PointIntervener):
         self.vnet2.eval()
         self.vnet2.cpu()
 
-    def should_intervene(self, action):
+    def should_intervene(self, action, uncert_value=None, uncert_threshold=None):
+        # if passing in uncertainty metrics, then use uncertainty-based filtering to decide 
+        # whether to run an intervention pipeline
+        if uncert_value != None and uncert_threshold != None:
+            if uncert_value < uncert_threshold:
+                return False
         q_inp = torch.from_numpy(np.concatenate([self.state, action])).unsqueeze(0)
         q1 = torch.sigmoid(self.qnet1(q_inp.float())).squeeze().item()
         q2 = torch.sigmoid(self.qnet2(q_inp.float())).squeeze().item()
