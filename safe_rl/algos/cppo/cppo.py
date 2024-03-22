@@ -1,5 +1,6 @@
 import numpy as np
-import torch
+import random
+import torch 
 from torch.optim import Adam
 import gym
 import time
@@ -376,6 +377,10 @@ def cppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
         # Value function learning
         for i in range(train_v_iters):
             vf_optimizer.zero_grad()
+            # IF UNCERTAINTY ESTIMATION: set heads here
+            if isinstance(ac, core.MLPActorCriticUncertainty):
+                heads = random.sample([x for x in range(0, ac.v.num_heads)], ac.v.num_heads-2)
+                ac.v.set_active_heads(heads)
             loss_v = compute_loss_v(data)
             loss_v.backward()
             mpi_avg_grads(ac.v)    # average grads across MPI processes

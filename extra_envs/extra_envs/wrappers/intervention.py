@@ -11,6 +11,11 @@ class Intervention(gym.Wrapper):
         - 'teleport' the agent to a different state. This also moves the time index of
           the environment forward one to several time steps.
         - move the agent to an absorbing state, and setting `done` to True
+    
+    ALTERATION FOR UNCERTAINTY ESTIMATION
+        - Pass in an action, an uncertainty metric, and a threshold. 
+        - These values default to NONE
+        - Pass values into intervener SHOULD INTERVENE
     """
 
     def __init__(self, env, intervener):
@@ -25,13 +30,13 @@ class Intervention(gym.Wrapper):
         self.intervener.reset(**kwargs)
         return self.env.reset()
 
-    def step(self, action=None):
+    def step(self, action=None, uncert_value=None, uncert_threshold=None):
         """
         If action is None, we intervene.
         """
         self.intervener.set_state(self.env.get_state())
 
-        if action is not None and not self.intervener.should_intervene(action):
+        if action is not None and not self.intervener.should_intervene(action, uncert_value=uncert_value, uncert_threshold=uncert_threshold):
             o, r, d, info = self.env.step(action)
             info['intervened'] = False
             return o, r, d, info

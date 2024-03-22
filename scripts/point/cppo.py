@@ -44,6 +44,7 @@ parser.add_argument('--exp_name', type=str, default='point')
 parser.add_argument('--seed', '-s', type=int, default=0)
 parser.add_argument('--cost_smoothing', type=float, default=0.)
 parser.add_argument('--num_test_episodes', type=int, default=10)
+parser.add_argument('--uncertainty', action='store_true')
 
 args = parser.parse_args()
 
@@ -54,6 +55,11 @@ with open(args.model_config) as f:
     sim_env_kwargs = yaml.load(f, Loader=yaml.FullLoader)
     if sim_env_kwargs is None:
         sim_env_kwargs = dict()
+
+if args.uncertainty == True:
+    ac = core.MLPActorCriticUncertainty
+else:
+    ac = core.MLPActorCritic 
 
 if args.intv_config == '':
     do_intv = False
@@ -75,7 +81,7 @@ def env_fn():
     intervener = IntervenerCls(sim_env, **intv_kwargs)
     return Intervention(env, intervener)
 
-cppo(env_fn, actor_critic=core.MLPActorCritic,
+cppo(env_fn, actor_critic=ac,
      ac_kwargs=dict(hidden_sizes=[args.hid]*args.l), gamma=args.gamma, seed=args.seed,
      dont_normalize_adv=args.dont_normalize_adv, steps_per_epoch=args.steps,
      epochs=args.epochs, logger_kwargs=logger_kwargs, cost_lim=args.cost_lim,
