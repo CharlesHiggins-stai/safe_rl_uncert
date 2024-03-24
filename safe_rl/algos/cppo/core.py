@@ -232,6 +232,10 @@ class MLPActorCritic(nn.Module):
             with torch.no_grad():
                 return self.pi.mean_act(obs).numpy()
         return self.step(obs)[0]
+    
+    def get_uncertainty(self, obs):
+        """Placeholder function"""
+        return None, None
 
 
 

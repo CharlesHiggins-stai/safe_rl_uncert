@@ -45,6 +45,7 @@ parser.add_argument('--seed', '-s', type=int, default=0)
 parser.add_argument('--cost_smoothing', type=float, default=0.)
 parser.add_argument('--num_test_episodes', type=int, default=10)
 parser.add_argument('--uncertainty', action='store_true')
+parser.add_argument('--uncert_threshold', type=float, default=0.25)
 
 args = parser.parse_args()
 
@@ -87,4 +88,4 @@ cppo(env_fn, actor_critic=ac,
      epochs=args.epochs, logger_kwargs=logger_kwargs, cost_lim=args.cost_lim,
      penalty=args.penalty, optimize_penalty=args.optimize_penalty,
      penalty_lr=args.penalty_lr, ent_bonus=args.ent_bonus,
-     ignore_unsafe_cost=args.ignore_unsafe_cost, num_test_episodes=args.num_test_episodes)
+     ignore_unsafe_cost=args.ignore_unsafe_cost, num_test_episodes=args.num_test_episodes, uncert_threshold=uncert_threshold)

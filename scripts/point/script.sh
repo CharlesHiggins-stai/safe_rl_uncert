@@ -11,7 +11,8 @@ python train_point_critics.py --cost_smoothing 0
 python train_point_critics.py --cost_smoothing 0.5
 
 # Iterate over seeds
-for s in 0 10 20 30 40 50 60 70 80 90; do
+# for s in 0 10 20 30 40 50 60 70 80 90; do
+for s in 0 10; do
 
   # Primal-dual optimization (PDO)
   ./cppo.py --epochs 500 --optimize_penalty -s $s --exp_name point_pdo
@@ -43,6 +44,34 @@ for s in 0 10 20 30 40 50 60 70 80 90; do
   # Intervention with biased model and shaped cost
   ./cppo.py --epochs 500 --ignore_unsafe_cost --intv_config intv/shaped.yaml \
     --model_config model/small.yaml -s $s --exp_name point_intv_biased_model_shaped_cost
+
+  ##############################
+  # UNCERTAINTY QUANTIFICATION # 
+  ##############################
+  # Intervention with point critic (sparse cost)
+  ./cppo.py --epochs 500 --ignore_unsafe_cost --intv_config intv/critic_no_smoothing.yaml -s $s \
+    --exp_name point_critic_intv_sparse_cost_UNCERTAINTY --uncertainty
+
+  # Intervention with point critic (shaped cost)
+  ./cppo.py --epochs 500 --ignore_unsafe_cost --intv_config intv/critic_smoothing.yaml -s $s \
+    --exp_name point_critic_intv_shaped_cost_UNCERTAINTY --uncertainty
+
+  # Intervention with true model and sparse cost
+  ./cppo.py --epochs 500 --ignore_unsafe_cost --intv_config intv/sparse.yaml \
+    -s $s --exp_name point_intv_true_model_sparse_cost_UNCERTAINTY --uncertainty
+
+  # Intervention with biased model and sparse cost
+  ./cppo.py --epochs 500 --ignore_unsafe_cost --intv_config intv/sparse.yaml \
+    --model_config model/small.yaml -s $s --exp_name point_intv_biased_model_sparse_cost_UNCERTAINTY --uncertainty
+
+  # Intervention with true model and shaped cost
+  ./cppo.py --epochs 500 --ignore_unsafe_cost --intv_config intv/shaped.yaml \
+    -s $s --exp_name point_intv_true_model_shaped_cost_UNCERTAINTY --uncertainty
+
+  # Intervention with biased model and shaped cost
+  ./cppo.py --epochs 500 --ignore_unsafe_cost --intv_config intv/shaped.yaml \
+    --model_config model/small.yaml -s $s --exp_name point_intv_biased_model_shaped_cost_UNCERTAINTY --uncertainty
+
 
   # CSC (sparse cost)
   ./csc.py --epochs 500 --optimize_penalty -s $s --alpha 0. --exp_name point_csc_sparse_cost
