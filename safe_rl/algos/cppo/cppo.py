@@ -136,7 +136,9 @@ def cppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
          num_test_episodes=10, ent_bonus=0.001, scaling=100., dont_normalize_adv=False,
          # Cost constraint/penalties
          cost_lim=0.01, penalty=1., penalty_lr=5e-2, update_penalty_every=1,
-         optimize_penalty=False, ignore_unsafe_cost=False
+         optimize_penalty=False, ignore_unsafe_cost=False,
+        #  Uncertainty args
+        uncert_threshold=0.5
          ):
     """
     Proximal Policy Optimization (by clipping),
@@ -435,8 +437,10 @@ def cppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
 
         for t in range(local_steps_per_epoch):
             a, v, vc, logp = ac.step(torch.as_tensor(o, dtype=torch.float32))
-            next_o, r, d, info = env.step(a)
-
+            # collect uncertainty
+            mu, sigma = ac.get_uncertainty(torch.as_tensor(o, dtype=torch.float32))
+            uncert_value = sigma[a]
+            next_o, r, d, info = env.step(a, uncert_value, uncert_threshold)
             intervened = info.get('intervened', False)
             if not intervened:
                 c = info.get('cost', 0.)
