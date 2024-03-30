@@ -20,7 +20,7 @@ class Intervener:
     def set_state(self, env_state):
         pass
 
-    def should_intervene(self, action):
+    def should_intervene(self, action, uncert_value=None, uncert_threshold=None):
         return False
 
     def safe_action(self):
