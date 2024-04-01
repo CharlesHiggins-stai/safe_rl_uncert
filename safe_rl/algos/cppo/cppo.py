@@ -438,8 +438,8 @@ def cppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
         for t in range(local_steps_per_epoch):
             a, v, vc, logp = ac.step(torch.as_tensor(o, dtype=torch.float32))
             # collect uncertainty
-            mu, sigma = ac.get_uncertainty(torch.as_tensor(o, dtype=torch.float32))
-            uncert_value = sigma[a]
+            _, sigma = ac.get_uncertainty(torch.as_tensor(o, dtype=torch.float32))
+            uncert_value = sigma
             next_o, r, d, info = env.step(a, uncert_value, uncert_threshold)
             intervened = info.get('intervened', False)
             if not intervened:

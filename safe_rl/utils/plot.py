@@ -167,7 +167,7 @@ def get_all_datasets(all_logdirs, legend=None, select=None, exclude=None):
 
 def make_plots(all_logdirs, legend=None, xaxis=None, values=None, count=False,
                font_scale=1.5, smooth=1, select=None, exclude=None, estimator='mean',
-               save=False, size=(6.4, 4.8)):
+               save=False, size=(15, 15)):
     data = get_all_datasets(all_logdirs, legend, select, exclude)
     values = values if isinstance(values, list) else [values]
     condition = 'Condition2' if count else 'Condition1'

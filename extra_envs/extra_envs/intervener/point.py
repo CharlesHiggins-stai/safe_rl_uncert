@@ -59,8 +59,8 @@ class PointIntervenerRollout(PointIntervener):
     def should_intervene(self, action, uncert_value=None, uncert_threshold=None):
         # if passing in uncertainty metrics, then use uncertainty-based filtering to decide 
         # whether to run an intervention pipeline
-        if uncert_value != None and uncert_threshold != None:
-            if uncert_value < uncert_threshold:
+        if type(uncert_value) != torch.Tensor and uncert_threshold != None and uncert_value!= None:
+            if uncert_value.item() < uncert_threshold:
                 return False
         distances = self.safe_pi_distances(action)
         costs = self.cost_fn(distances)
@@ -118,9 +118,14 @@ class PointIntervenerNetwork(PointIntervener):
     def should_intervene(self, action, uncert_value=None, uncert_threshold=None):
         # if passing in uncertainty metrics, then use uncertainty-based filtering to decide 
         # whether to run an intervention pipeline
-        if uncert_value != None and uncert_threshold != None:
-            if uncert_value < uncert_threshold:
+        if type(uncert_value) != torch.Tensor and uncert_threshold != None and uncert_value!= None:
+            if uncert_value.item() < uncert_threshold:
+                print('acceptable uncertainty')
+                print(uncert_value.item())
+                print(f'threshold: {uncert_threshold}')
                 return False
+            else:
+                print('too uncertainty -- further checks needed')
         q_inp = torch.from_numpy(np.concatenate([self.state, action])).unsqueeze(0)
         q1 = torch.sigmoid(self.qnet1(q_inp.float())).squeeze().item()
         q2 = torch.sigmoid(self.qnet2(q_inp.float())).squeeze().item()

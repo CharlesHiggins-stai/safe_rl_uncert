@@ -22,9 +22,11 @@ def mlp(sizes, activation, output_activation=nn.Identity):
     return nn.Sequential(*layers) 
 
 
-class mlpPriorEnsemble:
+class mlpPriorEnsemble(nn.Module):
     
     def __init__(self, sizes, activation, output_activation=nn.Identity, num_heads = 7):
+        super().__init__() 
+        layers = []
         self.training_mode = True
         for j in range(len(sizes)-2):
             act = activation if j < len(sizes)-2 else output_activation
@@ -33,6 +35,9 @@ class mlpPriorEnsemble:
         self.prior_body = nn.Sequential(*layers)
         self.output_heads = [nn.Linear(sizes[-2], sizes[-1], output_activation()) for _ in range(num_heads)]
         self.prior_output_heads = [nn.Linear(sizes[-2], sizes[-1], output_activation()) for _ in range(num_heads)]
+        
+    def forward(self, obs):
+        raise NotImplementedError
 
 
         
@@ -153,18 +158,18 @@ class MLPCriticUncertainty(nn.Module):
     def forward(self, obs):
         # Generate forward pass in prior network
         with torch.no_grad():
-            prior_x = self.vnet.prior_body(obs)
+            prior_x = self.v_net.prior_body(obs)
             if self.active_heads != None:
-                prior_out = [self.vnet.prior_output_heads[i](prior_x) for i in self.active_heads]
+                prior_out = torch.stack([self.v_net.prior_output_heads[i](prior_x) for i in self.active_heads])
                 
             else:
-                prior_out = [head(prior_x) for head in self.vnet.prior_output_heads]
+                prior_out = torch.stack([head(prior_x) for head in self.v_net.prior_output_heads])
         # Generate forward pass with network
-        x = self.vnet.body(obs)
+        x = self.v_net.body(obs)
         if self.active_heads != None:
-            out = [self.vnet.output_heads[i](x) for i in self.active_heads]
+            out = torch.stack([self.v_net.output_heads[i](x) for i in self.active_heads])
         else:
-            out = [head(x) for head in self.vnet.output_heads]
+            out = torch.stack([head(x) for head in self.v_net.output_heads])
         # Add in priors to network outputs
         out_with_prior = torch.add(out, prior_out) # check this does the element wise-sum, especially in batchces
         mu_values = torch.mean(out_with_prior, dim=0)
@@ -175,18 +180,18 @@ class MLPCriticUncertainty(nn.Module):
     def get_uncertainty(self, obs):
          # Generate forward pass in prior network
         with torch.no_grad():
-            prior_x = self.vnet.prior_body(obs)
+            prior_x = self.v_net.prior_body(obs)
             if self.active_heads != None:
-                prior_out = [self.vnet.prior_output_heads[i](prior_x) for i in self.active_heads]
+                prior_out = torch.stack([self.v_net.prior_output_heads[i](prior_x) for i in self.active_heads])
                 
             else:
-                prior_out = [head(prior_x) for head in self.vnet.prior_output_heads]
+                prior_out = torch.stack([head(prior_x) for head in self.v_net.prior_output_heads])
         # Generate forward pass with network
-        x = self.vnet.body(obs)
+        x = self.v_net.body(obs)
         if self.active_heads != None:
-            out = [self.vnet.output_heads[i](x) for i in self.active_heads]
+            out = torch.stack([self.v_net.output_heads[i](x) for i in self.active_heads])
         else:
-            out = [head(x) for head in self.vnet.output_heads]
+            out = torch.stack([head(x) for head in self.v_net.output_heads])
         # Add in priors to network outputs
         out_with_prior = torch.add(out, prior_out) # check this does the element wise-sum, especially in batchces
         mu_values = torch.mean(out_with_prior, dim=0)

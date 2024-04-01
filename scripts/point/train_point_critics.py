@@ -20,7 +20,7 @@ ax, ay = np.linspace(-1, 1, ACT_DISC), np.linspace(-1, 1, ACT_DISC)
 import numpy as np
 import torch
 import torch.nn as nn
-
+device = "cuda" if torch.cuda.is_available() else "cpu"
 def mlp(sizes, activation, output_activation=nn.Identity, batch_norm=False):
     layers = []
     for j in range(len(sizes)-1):
@@ -51,7 +51,7 @@ loader = torch.utils.data.DataLoader(qdataset, batch_size=4096, shuffle=True)
 # Train two networks
 for i in range(2):
     qnet = mlp([qdataset.tensors[0].shape[1], 256, 256, 256, 1], torch.nn.ReLU)
-    qnet.cuda()
+    qnet.to(device)
 
 
     optimizer = optim.Adam(qnet.parameters(), lr=1e-3)
@@ -61,7 +61,7 @@ for i in range(2):
     for epoch in range(10):
         vloss, ctr = 0., 0
         for data in loader:
-            inp, tgt = [x.cuda() for x in data]
+            inp, tgt = [x.to(device) for x in data]
             optimizer.zero_grad()
             preds = qnet(inp)
             loss = tr_criterion(preds, tgt)

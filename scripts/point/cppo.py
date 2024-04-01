@@ -88,4 +88,4 @@ cppo(env_fn, actor_critic=ac,
      epochs=args.epochs, logger_kwargs=logger_kwargs, cost_lim=args.cost_lim,
      penalty=args.penalty, optimize_penalty=args.optimize_penalty,
      penalty_lr=args.penalty_lr, ent_bonus=args.ent_bonus,
-     ignore_unsafe_cost=args.ignore_unsafe_cost, num_test_episodes=args.num_test_episodes, uncert_threshold=uncert_threshold)
+     ignore_unsafe_cost=args.ignore_unsafe_cost, num_test_episodes=args.num_test_episodes, uncert_threshold=args.uncert_threshold)
