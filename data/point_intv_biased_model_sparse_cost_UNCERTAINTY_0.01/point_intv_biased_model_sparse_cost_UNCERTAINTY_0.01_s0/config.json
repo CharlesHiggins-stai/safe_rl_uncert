@@ -17,7 +17,7 @@
     "ignore_unsafe_cost":	true,
     "lam":	0.97,
     "logger":	{
-        "<safe_rl.utils.logx.EpochLogger object at 0x7f814c7eb9e8>":	{
+        "<safe_rl.utils.logx.EpochLogger object at 0x7f1b4a8dcf60>":	{
             "epoch_dict":	{},
             "exp_name":	"point_intv_biased_model_sparse_cost_UNCERTAINTY_0.01",
             "first_row":	true,
