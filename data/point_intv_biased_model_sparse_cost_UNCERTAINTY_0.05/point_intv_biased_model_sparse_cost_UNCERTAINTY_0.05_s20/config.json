@@ -1,0 +1,54 @@
+{
+    "ac_kwargs":	{
+        "hidden_sizes":	[
+            64,
+            64
+        ]
+    },
+    "actor_critic":	"MLPActorCriticUncertainty",
+    "clip_ratio":	0.2,
+    "cost_lim":	0.01,
+    "dont_normalize_adv":	false,
+    "ent_bonus":	0.001,
+    "env_fn":	"env_fn",
+    "epochs":	500,
+    "exp_name":	"point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05",
+    "gamma":	0.99,
+    "ignore_unsafe_cost":	true,
+    "lam":	0.97,
+    "logger":	{
+        "<safe_rl.utils.logx.EpochLogger object at 0x7fe1e51fef98>":	{
+            "epoch_dict":	{},
+            "exp_name":	"point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05",
+            "first_row":	true,
+            "log_current_row":	{},
+            "log_headers":	[],
+            "output_dir":	"/home/charleshiggins/safe_rl_uncert/data/point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05/point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05_s20",
+            "output_file":	{
+                "<_io.TextIOWrapper name='/home/charleshiggins/safe_rl_uncert/data/point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05/point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05_s20/progress.txt' mode='w' encoding='UTF-8'>":	{
+                    "mode":	"w"
+                }
+            }
+        }
+    },
+    "logger_kwargs":	{
+        "exp_name":	"point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05",
+        "output_dir":	"/home/charleshiggins/safe_rl_uncert/data/point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05/point_intv_biased_model_sparse_cost_UNCERTAINTY_0.05_s20"
+    },
+    "max_ep_len":	1000,
+    "num_test_episodes":	10,
+    "optimize_penalty":	false,
+    "penalty":	2.0,
+    "penalty_lr":	0.05,
+    "pi_lr":	0.0003,
+    "save_freq":	10,
+    "scaling":	100.0,
+    "seed":	20,
+    "steps_per_epoch":	4000,
+    "target_kl":	0.01,
+    "train_pi_iters":	80,
+    "train_v_iters":	80,
+    "uncert_threshold":	0.05,
+    "update_penalty_every":	1,
+    "vf_lr":	0.001
+}
