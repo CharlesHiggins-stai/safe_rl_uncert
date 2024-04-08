@@ -1,7 +1,7 @@
 #!/bin/bash
 
 for s in 0 10 20; do
-    for ut in 0.01 0.05 0.1 0.25 0.5 0.75 1 2; do
+    for ut in 0.0; do
 
   ##############################
   # UNCERTAINTY QUANTIFICATION # 
